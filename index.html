@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mario Morales Portilla — Ingeniero de Software</title>
+<meta name="description" content="Portafolio de Mario Morales Portilla, Ingeniero de Software. Full-stack, IA/LLMs, .NET, Java, React.">
+<style>
+  :root {
+    --bg: #0b0f14;
+    --bg-2: #111821;
+    --card: #141c27;
+    --border: #223040;
+    --text: #e6edf3;
+    --muted: #8b9bb0;
+    --accent: #4fd1c5;
+    --accent-2: #7c9cff;
+    --radius: 14px;
+    --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  [data-theme="light"] {
+    --bg: #f7f9fc;
+    --bg-2: #eef2f8;
+    --card: #ffffff;
+    --border: #dbe3ee;
+    --text: #0f1722;
+    --muted: #556275;
+    --accent: #0d9488;
+    --accent-2: #3b5bdb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background .3s, color .3s;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { width: min(1080px, 92%); margin: 0 auto; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-family: var(--mono); font-weight: 700; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 1.6rem; list-style: none; }
+  .nav-links a { color: var(--muted); font-size: .95rem; }
+  .nav-links a:hover { color: var(--text); text-decoration: none; }
+  .nav-actions { display: flex; gap: .5rem; }
+  .btn-icon {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: .35rem .7rem; cursor: pointer; font-family: var(--mono); font-size: .85rem;
+  }
+  .btn-icon:hover { border-color: var(--accent); }
+
+  /* HERO */
+  .hero { padding: 7rem 0 5rem; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -40% -20% auto auto; width: 620px; height: 620px;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent-2) 30%, transparent), transparent 65%);
+    filter: blur(30px); z-index: -1;
+  }
+  .tag { font-family: var(--mono); color: var(--accent); font-size: .95rem; margin-bottom: 1rem; }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4rem); line-height: 1.1; letter-spacing: -.02em; }
+  .hero h2 { font-size: clamp(1.3rem, 3vw, 2rem); color: var(--muted); font-weight: 500; margin: .6rem 0 1.4rem; }
+  .typed { color: var(--accent-2); font-family: var(--mono); }
+  .cursor { display: inline-block; width: 10px; background: var(--accent); animation: blink 1s steps(1) infinite; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hero p { max-width: 620px; color: var(--muted); font-size: 1.08rem; }
+  .cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem; padding: .75rem 1.3rem; border-radius: 10px;
+    font-weight: 600; border: 1px solid var(--accent); transition: transform .15s, background .2s;
+  }
+  .btn:hover { transform: translateY(-2px); text-decoration: none; }
+  .btn-primary { background: var(--accent); color: #04121a; }
+  .btn-ghost { color: var(--accent); }
+  .btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+  /* SECTIONS */
+  section { padding: 5rem 0; }
+  .section-title { display: flex; align-items: center; gap: 1rem; font-size: 1.7rem; margin-bottom: 2.4rem; }
+  .section-title .num { font-family: var(--mono); color: var(--accent); font-size: 1.1rem; }
+  .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); max-width: 320px; }
+  .alt { background: var(--bg-2); }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 3rem; align-items: start; }
+  .about-grid p { color: var(--muted); margin-bottom: 1rem; }
+  .facts { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; font-family: var(--mono); font-size: .9rem; }
+  .facts div { display: flex; justify-content: space-between; gap: 1rem; padding: .55rem 0; border-bottom: 1px dashed var(--border); }
+  .facts div:last-child { border: none; }
+  .facts span:first-child { color: var(--muted); }
+  .facts span:last-child { text-align: right; }
+
+  /* EXPERIENCE */
+  .timeline { border-left: 2px solid var(--border); padding-left: 2rem; }
+  .job { position: relative; }
+  .job::before {
+    content: ""; position: absolute; left: calc(-2rem - 7px); top: .45rem; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  .job h3 { font-size: 1.25rem; }
+  .job h3 .at { color: var(--accent); }
+  .job .meta { font-family: var(--mono); color: var(--muted); font-size: .88rem; margin: .2rem 0 1rem; }
+  .job ul { list-style: none; }
+  .job li { color: var(--muted); padding-left: 1.4rem; position: relative; margin-bottom: .55rem; }
+  .job li::before { content: "▹"; color: var(--accent); position: absolute; left: 0; }
+
+  /* PROJECTS */
+  .projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.4rem; }
+  .project {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.6rem; display: flex; flex-direction: column; transition: transform .2s, border-color .2s;
+  }
+  .project:hover { transform: translateY(-5px); border-color: var(--accent); }
+  .project-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .project-head .folder { color: var(--accent); font-size: 1.8rem; }
+  .status { font-family: var(--mono); font-size: .72rem; padding: .2rem .55rem; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); }
+  .status.done { color: var(--accent); border-color: var(--accent); }
+  .status.wip { color: var(--accent-2); border-color: var(--accent-2); }
+  .project h3 { font-size: 1.2rem; margin-bottom: .6rem; }
+  .project p { color: var(--muted); font-size: .95rem; flex: 1; }
+  .chips { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.2rem; }
+  .chip { font-family: var(--mono); font-size: .75rem; color: var(--accent-2); background: color-mix(in srgb, var(--accent-2) 12%, transparent); padding: .2rem .55rem; border-radius: 6px; }
+  .project .link { margin-top: 1rem; font-family: var(--mono); font-size: .85rem; }
+
+  /* SKILLS */
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.4rem; }
+  .skill-group { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.4rem; }
+  .skill-group h3 { font-size: 1rem; margin-bottom: 1rem; font-family: var(--mono); color: var(--accent); }
+  .skill-group .chips { margin-top: 0; }
+  .skill-group .chip { color: var(--text); background: var(--bg-2); border: 1px solid var(--border); }
+
+  /* EDUCATION */
+  .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.4rem; }
+  .edu-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; }
+  .edu-card h3 { font-size: 1.1rem; margin-bottom: .3rem; }
+  .edu-card .meta { font-family: var(--mono); color: var(--muted); font-size: .85rem; margin-bottom: .8rem; }
+  .edu-card p { color: var(--muted); font-size: .95rem; }
+
+  /* CONTACT */
+  .contact { text-align: center; }
+  .contact h2 { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 1rem; }
+  .contact p { color: var(--muted); max-width: 540px; margin: 0 auto 2rem; }
+  .contact .cta { justify-content: center; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; color: var(--muted); font-family: var(--mono); font-size: .82rem; }
+
+  /* reveal animation */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 760px) {
+    .nav-links { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .hero { padding: 4.5rem 0 3rem; }
+    section { padding: 3.5rem 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="#top" class="logo">&lt;Mario<span>/</span>&gt;</a>
+    <ul class="nav-links">
+      <li><a href="#about" data-i18n="nav.about">Sobre mí</a></li>
+      <li><a href="#experience" data-i18n="nav.exp">Experiencia</a></li>
+      <li><a href="#projects" data-i18n="nav.projects">Proyectos</a></li>
+      <li><a href="#skills" data-i18n="nav.skills">Habilidades</a></li>
+      <li><a href="#contact" data-i18n="nav.contact">Contacto</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn-icon" id="langBtn" aria-label="Cambiar idioma">EN</button>
+      <button class="btn-icon" id="themeBtn" aria-label="Cambiar tema">☀</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="container">
+    <p class="tag" data-i18n="hero.tag">Hola, mi nombre es</p>
+    <h1>Mario Morales Portilla.</h1>
+    <h2><span data-i18n="hero.role">Ingeniero de Software ·</span> <span class="typed" id="typed"></span><span class="cursor">&nbsp;</span></h2>
+    <p data-i18n="hero.desc">Construyo software full-stack robusto y bien documentado, desde sistemas distribuidos en .NET y Java hasta aplicaciones con IA impulsadas por LLMs. Me apasionan el diseño de software, las buenas prácticas y los productos que resuelven problemas reales.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#projects" data-i18n="hero.cta1">Ver proyectos</a>
+      <a class="btn btn-ghost" href="https://github.com/ArcaneRyuhas" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
+        GitHub
+      </a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/mario-portilla-9998b2326/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="container reveal">
+    <h2 class="section-title"><span class="num">01.</span> <span data-i18n="nav.about">Sobre mí</span></h2>
+    <div class="about-grid">
+      <div>
+        <p data-i18n="about.p1">Soy Ingeniero de Software egresado de la Universidad Veracruzana en Xalapa, México. Disfruto diseñar sistemas con una arquitectura clara: modelado UML, patrones de diseño y metodologías como ICONIX y SCRUM son parte de mi forma de trabajar.</p>
+        <p data-i18n="about.p2">Recientemente formé parte del programa InStep de Infosys en Bangalore, India, donde desarrollé aplicaciones impulsadas por LLMs con FastAPI, LangChain y React, además de una solución de mantenimiento predictivo con gemelos digitales y Machine Learning.</p>
+        <p data-i18n="about.p3">Me interesa especialmente la intersección entre la ingeniería de software sólida y la inteligencia artificial, así como el desarrollo de videojuegos y los sistemas distribuidos.</p>
+      </div>
+      <div class="facts">
+        <div><span data-i18n="facts.loc">ubicación</span><span>Xalapa, VER, MX</span></div>
+        <div><span data-i18n="facts.focus">enfoque</span><span>Full-Stack · AI/LLMs</span></div>
+        <div><span data-i18n="facts.degree">título</span><span data-i18n="facts.degreeVal">Ing. de Software</span></div>
+        <div><span data-i18n="facts.lang">idiomas</span><span data-i18n="facts.langVal">Español (nativo) · Inglés (B2)</span></div>
+        <div><span data-i18n="facts.status">estado</span><span style="color:var(--accent)" data-i18n="facts.statusVal">● Abierto a oportunidades</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience" class="alt">
+  <div class="container reveal">
+    <h2 class="section-title"><span class="num">02.</span> <span data-i18n="nav.exp">Experiencia</span></h2>
+    <div class="timeline">
+      <div class="job">
+        <h3><span data-i18n="exp.role">InStep Intern — IA y Análisis de Datos</span> <span class="at">@ Infosys</span></h3>
+        <p class="meta">Bangalore, Karnataka, India · 02/2025 – 08/2025</p>
+        <ul>
+          <li data-i18n="exp.l1">Desarrollo de aplicaciones impulsadas por LLMs: backend con Python, FastAPI y LangChain, y frontend con React, enfocado en la precisión de las respuestas del modelo.</li>
+          <li data-i18n="exp.l2">Desarrollo de una aplicación de IA para mantenimiento predictivo utilizando gemelos digitales (digital twins) y algoritmos de Machine Learning.</li>
+          <li data-i18n="exp.l3">Trabajo en equipo con code reviews, dailies y reuniones semanales de seguimiento.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="container reveal">
+    <h2 class="section-title"><span class="num">03.</span> <span data-i18n="nav.projects">Proyectos</span></h2>
+    <div class="projects">
+
+      <article class="project">
+        <div class="project-head"><span class="folder">🔐</span><span class="status done" data-i18n="st.done">COMPLETADO</span></div>
+        <h3 data-i18n="p1.title">Sistema de Gestión Financiera</h3>
+        <p data-i18n="p1.desc">Módulos de visualización de datos y estadística. Seguridad con autenticación de dos factores, tokens JWT y hashing de contraseñas. Documentado con ICONIX y elementos de SCRUM.</p>
+        <div class="chips"><span class="chip">C#</span><span class="chip">.NET</span><span class="chip">Avalonia</span><span class="chip">Java</span><span class="chip">Spring Boot</span><span class="chip">MySQL</span><span class="chip">JWT</span></div>
+      </article>
+
+      <article class="project">
+        <div class="project-head"><span class="folder">💪</span><span class="status done" data-i18n="st.done">COMPLETADO</span></div>
+        <h3>Effort — Fitness App</h3>
+        <p data-i18n="p2.desc">Red social fitness: gestión de rutinas, subida de videos instructivos, contenido de la comunidad y seguimiento entre usuarios. Arquitectura documentada con casos de uso, modelos de dominio y datos, diagramas de robustez y de secuencia.</p>
+        <div class="chips"><span class="chip">Full-Stack</span><span class="chip">UML</span><span class="chip">ICONIX</span><span class="chip">Domain Modeling</span></div>
+      </article>
+
+      <article class="project">
+        <div class="project-head"><span class="folder">🃏</span><span class="status done" data-i18n="st.done">COMPLETADO</span></div>
+        <h3>Astralis — Card Game</h3>
+        <p data-i18n="p3.desc">Juego de cartas multijugador en tiempo real para hasta 4 jugadores, con chat y sincronización de jugadores. Plan de pruebas detallado con una suite en C#, manejo de excepciones y logging.</p>
+        <div class="chips"><span class="chip">C#</span><span class="chip">WPF</span><span class="chip">WCF</span><span class="chip">Unit Testing</span><span class="chip">Distributed Systems</span></div>
+      </article>
+
+      <article class="project">
+        <div class="project-head"><span class="folder">🛡️</span><span class="status wip" data-i18n="st.wip">EN DESARROLLO</span></div>
+        <h3>Windows App Blocker</h3>
+        <p data-i18n="p4.desc">Servicio de Windows que ayuda a los usuarios a dejar de usar las aplicaciones que elijan. Arquitectura por capas: Domain, Helpers e Infrastructure.</p>
+        <div class="chips"><span class="chip">.NET</span><span class="chip">C#</span><span class="chip">Windows Service</span></div>
+        <a class="link" href="https://github.com/ArcaneRyuhas/WindowsAppBlocker" target="_blank" rel="noopener">→ GitHub</a>
+      </article>
+
+      <article class="project">
+        <div class="project-head"><span class="folder">🤖</span><span class="status done" data-i18n="st.done">COMPLETADO</span></div>
+        <h3 data-i18n="p5.title">Apps con LLMs explicables</h3>
+        <p data-i18n="p5.desc">Aplicaciones de IA generativa con respuestas verificables y explicables, desarrolladas durante el programa InStep y su hackathon.</p>
+        <div class="chips"><span class="chip">Python</span><span class="chip">FastAPI</span><span class="chip">LangChain</span><span class="chip">React</span><span class="chip">LLMs</span></div>
+      </article>
+
+      <article class="project">
+        <div class="project-head"><span class="folder">🛒</span><span class="status" data-i18n="st.learn">PRÁCTICA</span></div>
+        <h3>Mcart App</h3>
+        <p data-i18n="p6.desc">Aplicación de carrito de compras construida con Angular para practicar componentes, routing y formularios.</p>
+        <div class="chips"><span class="chip">Angular</span><span class="chip">TypeScript</span><span class="chip">RxJS</span></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="alt">
+  <div class="container reveal">
+    <h2 class="section-title"><span class="num">04.</span> <span data-i18n="nav.skills">Habilidades</span></h2>
+    <div class="skills">
+      <div class="skill-group">
+        <h3 data-i18n="sk.lang">// Lenguajes</h3>
+        <div class="chips"><span class="chip">Java</span><span class="chip">C#</span><span class="chip">C++</span><span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">TypeScript</span><span class="chip">SQL</span></div>
+      </div>
+      <div class="skill-group">
+        <h3>// Frameworks</h3>
+        <div class="chips"><span class="chip">.NET</span><span class="chip">Spring Boot</span><span class="chip">React</span><span class="chip">Angular</span><span class="chip">FastAPI</span><span class="chip">LangChain</span><span class="chip">WPF / WCF</span><span class="chip">Avalonia</span></div>
+      </div>
+      <div class="skill-group">
+        <h3>// Cloud &amp; Data</h3>
+        <div class="chips"><span class="chip">AWS</span><span class="chip" data-i18n="sk.awsArch">Arquitectura AWS</span><span class="chip">MySQL</span><span class="chip">LLMs</span><span class="chip">Machine Learning</span><span class="chip">Git</span></div>
+      </div>
+      <div class="skill-group">
+        <h3 data-i18n="sk.eng">// Ingeniería</h3>
+        <div class="chips"><span class="chip" data-i18n="sk.design">Diseño de Software</span><span class="chip" data-i18n="sk.patterns">Patrones de Diseño</span><span class="chip">UML</span><span class="chip">OOP</span><span class="chip">ICONIX</span><span class="chip">SCRUM</span><span class="chip">JUnit</span><span class="chip">Unit Testing</span><span class="chip" data-i18n="sk.dist">Sistemas Distribuidos</span><span class="chip" data-i18n="sk.games">Desarrollo de Videojuegos</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="container reveal">
+    <h2 class="section-title"><span class="num">05.</span> <span data-i18n="nav.edu">Educación y logros</span></h2>
+    <div class="edu-grid">
+      <div class="edu-card">
+        <h3>🎓 Universidad Veracruzana</h3>
+        <p class="meta">Xalapa, VER · 08/2021 – 08/2025</p>
+        <p data-i18n="edu.degree">Licenciatura en Ingeniería de Software.</p>
+      </div>
+      <div class="edu-card">
+        <h3>🏆 Hackathon ANIEI 2023</h3>
+        <p class="meta" data-i18n="edu.aniei.meta">Congreso Nacional e Internacional de Informática</p>
+        <p data-i18n="edu.aniei">Participación en el hackathon de la Asociación Nacional de Instituciones de Educación en Tecnologías de la Información durante el XXXVI Congreso Nacional y XXII Internacional.</p>
+      </div>
+      <div class="edu-card">
+        <h3>🏆 InStep Hackathon — Infosys</h3>
+        <p class="meta">Bangalore, India · 2025</p>
+        <p data-i18n="edu.instep">Solución al reto de uso de LLMs con resultados explicables.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="alt">
+  <div class="container contact reveal">
+    <p class="tag">06. <span data-i18n="contact.tag">¿Qué sigue?</span></p>
+    <h2 data-i18n="contact.title">Hablemos</h2>
+    <p data-i18n="contact.desc">Estoy abierto a nuevas oportunidades como ingeniero de software. Si tienes un proyecto, una vacante o simplemente quieres saludar, mi bandeja de entrada está abierta.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="mailto:mariom.portilla@gmail.com">✉ mariom.portilla@gmail.com</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/mario-portilla-9998b2326/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-ghost" href="https://github.com/ArcaneRyuhas" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">© <span id="year"></span> Mario Morales Portilla · <span data-i18n="footer">Hecho con HTML, CSS y JS</span></div>
+</footer>
+
+<script>
+  const EN = {
+    "nav.about": "About", "nav.exp": "Experience", "nav.projects": "Projects", "nav.skills": "Skills",
+    "nav.contact": "Contact", "nav.edu": "Education & achievements",
+    "hero.tag": "Hi, my name is", "hero.role": "Software Engineer ·",
+    "hero.desc": "I build robust, well-documented full-stack software, from distributed systems in .NET and Java to AI applications powered by LLMs. I'm passionate about software design, best practices and products that solve real problems.",
+    "hero.cta1": "View projects",
+    "about.p1": "I'm a Software Engineer from Universidad Veracruzana in Xalapa, Mexico. I enjoy designing systems with clear architecture: UML modeling, design patterns and methodologies such as ICONIX and SCRUM are part of how I work.",
+    "about.p2": "I recently joined Infosys' InStep program in Bangalore, India, where I built LLM-powered applications with FastAPI, LangChain and React, plus a predictive maintenance solution using digital twins and Machine Learning.",
+    "about.p3": "I'm especially interested in the intersection of solid software engineering and artificial intelligence, as well as game development and distributed systems.",
+    "facts.loc": "location", "facts.focus": "focus", "facts.degree": "degree", "facts.degreeVal": "B.Sc. Software Eng.",
+    "facts.lang": "languages", "facts.langVal": "Spanish (native) · English (B2)", "facts.status": "status", "facts.statusVal": "● Open to opportunities",
+    "exp.role": "InStep Intern — AI & Data Analytics",
+    "exp.l1": "Built LLM-powered applications: backend with Python, FastAPI and LangChain, frontend with React, focused on the accuracy of model answers.",
+    "exp.l2": "Developed an AI application for predictive maintenance using digital twins and Machine Learning algorithms.",
+    "exp.l3": "Team-based work with code reviews, daily stand-ups and weekly meetings.",
+    "st.done": "COMPLETED", "st.wip": "IN PROGRESS", "st.learn": "PRACTICE",
+    "p1.title": "Financial Management System",
+    "p1.desc": "Data visualization and statistics modules. Security with two-factor authentication, JWT tokens and password hashing. Documented with ICONIX plus SCRUM practices.",
+    "p2.desc": "Fitness social network: workout routine management, instructional video uploads, community content and user following. Architecture documented with use cases, domain and data models, robustness and sequence diagrams.",
+    "p3.desc": "Real-time multiplayer card game for up to 4 players with chat and player synchronization. Detailed testing plan with a C# test suite, exception handling and logging.",
+    "p4.desc": "Windows service that helps users stop using the apps of their choice. Layered architecture: Domain, Helpers and Infrastructure.",
+    "p5.title": "Explainable LLM Apps",
+    "p5.desc": "Generative AI applications with verifiable, explainable answers, built during the InStep program and its hackathon.",
+    "p6.desc": "Shopping cart application built with Angular to practice components, routing and forms.",
+    "sk.lang": "// Languages", "sk.eng": "// Engineering", "sk.awsArch": "AWS Architecture", "sk.design": "Software Design",
+    "sk.patterns": "Design Patterns", "sk.dist": "Distributed Systems", "sk.games": "Game Development",
+    "edu.degree": "Bachelor's Degree in Software Engineering.",
+    "edu.aniei.meta": "National & International Congress of Informatics",
+    "edu.aniei": "Took part in the hackathon organized by the National Association of IT Education Institutions (ANIEI) during the XXXVI National and XXII International Congress.",
+    "edu.instep": "Tackled the challenge of using LLMs with explainable results.",
+    "contact.tag": "What's next?", "contact.title": "Let's talk",
+    "contact.desc": "I'm open to new opportunities as a software engineer. Whether you have a project, a role or just want to say hi, my inbox is open.",
+    "footer": "Built with HTML, CSS & JS"
+  };
+  const ROLES = {
+    es: ["Full-Stack", "IA & LLMs", ".NET & Java", "React", "Sistemas Distribuidos"],
+    en: ["Full-Stack", "AI & LLMs", ".NET & Java", "React", "Distributed Systems"]
+  };
+
+  // i18n
+  const nodes = document.querySelectorAll("[data-i18n]");
+  const ES = {};
+  nodes.forEach(n => ES[n.dataset.i18n] = n.textContent);
+  let lang = localStorage.getItem("lang") || "es";
+  function applyLang() {
+    const dict = lang === "en" ? EN : ES;
+    nodes.forEach(n => { if (dict[n.dataset.i18n]) n.textContent = dict[n.dataset.i18n]; });
+    document.documentElement.lang = lang;
+    document.getElementById("langBtn").textContent = lang === "en" ? "ES" : "EN";
+    localStorage.setItem("lang", lang);
+  }
+  document.getElementById("langBtn").onclick = () => { lang = lang === "es" ? "en" : "es"; applyLang(); };
+  applyLang();
+
+  // theme
+  const themeBtn = document.getElementById("themeBtn");
+  function setTheme(t) {
+    document.documentElement.dataset.theme = t;
+    themeBtn.textContent = t === "light" ? "☾" : "☀";
+    localStorage.setItem("theme", t);
+  }
+  setTheme(localStorage.getItem("theme") || "dark");
+  themeBtn.onclick = () => setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
+
+  // typing effect
+  const typed = document.getElementById("typed");
+  let ri = 0, ci = 0, deleting = false;
+  (function tick() {
+    const words = ROLES[lang];
+    const w = words[ri % words.length];
+    typed.textContent = w.slice(0, ci);
+    if (!deleting && ci < w.length) ci++;
+    else if (deleting && ci > 0) ci--;
+    else if (!deleting) { deleting = true; return setTimeout(tick, 1400); }
+    else { deleting = false; ri++; }
+    setTimeout(tick, deleting ? 45 : 90);
+  })();
+
+  // reveal on scroll
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+  }), { threshold: .12 });
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
