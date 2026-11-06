@@ -106,7 +106,7 @@
   .sd-body { position: relative; padding: 1.5rem 0 1.8rem; }
   .ll { position: absolute; top: 3.2rem; bottom: 0; width: 0; border-left: 1.5px dashed var(--muted); }
   .ll:nth-child(1) { left: 16.666%; } .ll:nth-child(2) { left: 50%; } .ll:nth-child(3) { left: 83.333%; }
-  .heads { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-bottom: 1.2rem; }
+  .heads { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-bottom: 1.2rem; }
   .heads span { justify-self: center; font-family: var(--mono); font-size: .82rem; font-weight: 600; border: 1.5px solid var(--ink); background: var(--panel); padding: .3rem .7rem; }
   .msg { position: relative; margin-bottom: 1.05rem; }
   .msg:last-child { margin-bottom: 0; }
@@ -237,12 +237,30 @@
   }
   @media (max-width: 680px) {
     section { padding: 4rem 0; }
+    /* without JS the boxes stack; with JS they stay a movable diagram */
     .board { height: auto; display: grid; gap: .9rem; }
     .board svg, .drag-note { display: none; }
     .cls { position: static; width: 100%; cursor: default; touch-action: auto; user-select: auto; }
-    .cls:hover { box-shadow: none; }
-    .msg p { margin-left: .8rem; width: calc(100% - 1.6rem); }
-    .heads span { font-size: .72rem; padding: .25rem .35rem; }
+    .cls:not(.drag):hover { box-shadow: none; }
+    .js .board { display: block; }
+    .js #wires { display: block; }
+    .js .board text { font-size: 10.5px; }
+    .js .cls { position: absolute; width: min(190px, 62%); font-size: .7rem; cursor: grab; touch-action: pan-y; user-select: none; }
+    .js .drag-note { display: block; left: calc(min(190px, 62%) + 1.7rem); right: 0; top: 3.6rem; font-size: 1.25rem; }
+    .js .drag-note .note-arrow { display: block; left: -26px; top: -18px; width: 30px; height: 26px; }
+    /* sequence: lifelines in a narrow lane, text beside them, so nothing cuts the lines */
+    .heads { grid-template-columns: 1fr; gap: .35rem; padding: 0 1rem; margin-bottom: 1.1rem; text-align: left; counter-reset: ll; }
+    .heads span { display: flex; align-items: center; gap: .5rem; justify-self: start; border: 0; background: none; padding: 0; font-size: .8rem; counter-increment: ll; }
+    .heads span::before, .ll::before { width: 1.35rem; border: 1.5px solid var(--ink); background: var(--panel); font-family: var(--mono); font-size: .72rem; font-weight: 600; line-height: 1.35rem; text-align: center; color: var(--ink); }
+    .heads span::before { content: counter(ll, upper-alpha); flex: none; }
+    .seq { position: relative; padding-top: 2.2rem; }
+    .ll { top: 1.45rem; }
+    .ll::before { position: absolute; top: -1.45rem; left: 0; transform: translateX(-50%); }
+    .ll:nth-child(1) { left: 1.6rem; } .ll:nth-child(2) { left: 3.35rem; } .ll:nth-child(3) { left: 5.1rem; }
+    .ll:nth-child(1)::before { content: "A"; } .ll:nth-child(2)::before { content: "B"; } .ll:nth-child(3)::before { content: "C"; }
+    .msg { display: grid; grid-template-columns: 5.9rem 1fr; align-items: center; margin-bottom: 1rem; }
+    .msg p { grid-column: 2; grid-row: 1; margin: 0; width: auto; padding: 0 1rem 0 .2rem; background: none; font-size: .9rem; }
+    .arrow { grid-column: 1; grid-row: 1; justify-self: start; margin-left: calc(1.6rem + var(--a) * 1.75rem); width: calc((var(--b) - var(--a)) * 1.75rem); }
     .notes { grid-template-columns: 1fr; }
     .sd-meta { display: block; margin: .5rem .8rem 0; }
     .pkg, .pkg.wide, .obj, .obj:nth-child(-n+2) { grid-column: span 6; }
@@ -250,6 +268,11 @@
     .code-lines .ln { padding-left: 1rem; }
     .code-lines .ln::before { display: none; }
     .stamp { margin-left: 0; }
+  }
+  @media (pointer: coarse) {
+    .js .cls { touch-action: pan-y; }
+    .js .cls header { position: relative; touch-action: none; }
+    .js .cls header::after { content: ""; position: absolute; right: .45rem; top: 50%; width: 10px; height: 15px; transform: translateY(-50%); opacity: .55; background: radial-gradient(currentColor 1.2px, transparent 1.5px) 0 0 / 5px 5px; }
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -392,13 +415,15 @@
       <span class="sd-tag">sd Infosys : Systems Engineer</span>
       <span class="sd-meta" data-i18n="e1.d">01/2026 – hoy · Ciudad de México · remoto · consultoría</span>
       <div class="sd-body">
-        <div aria-hidden="true"><span class="ll"></span><span class="ll"></span><span class="ll"></span></div>
         <div class="heads"><span>Mario</span><span data-i18n="e1.a">App con scope propio</span><span data-i18n="e1.b">Sistemas de la empresa</span></div>
+        <div class="seq">
+        <div aria-hidden="true"><span class="ll"></span><span class="ll"></span><span class="ll"></span></div>
         <div class="msg" style="--a:0;--b:1;--d:.1s"><p data-i18n="e1.1">Desarrolla una <b>aplicación personalizada</b> en ServiceNow para un cliente empresarial</p><i class="arrow"></i></div>
         <div class="msg" style="--a:0;--b:1;--d:.3s"><p data-i18n="e1.2">Automatiza sus procesos con <b>flows</b> y <b>business rules</b></p><i class="arrow"></i></div>
         <div class="msg" style="--a:0;--b:1;--d:.5s"><p data-i18n="e1.3">Construye sus <b>record producers</b> y <b>knowledge bases</b></p><i class="arrow"></i></div>
         <div class="msg" style="--a:1;--b:2;--d:.7s"><p data-i18n="e1.4">Se integra con los sistemas propios de la empresa por <b>REST API</b></p><i class="arrow"></i></div>
         <div class="msg rev dash" style="--a:1;--b:2;--d:.9s"><p data-i18n="e1.5"><b>Migración de datos</b> y adjuntos hacia ServiceNow, en curso</p><i class="arrow"></i></div>
+        </div>
       </div>
       <div class="notes">
         <div class="note"><b>~400,000<svg class="ring" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true"><path class="draw" pathLength="1" d="M28 8 C80 -2 170 0 192 22 C206 44 130 58 70 56 C20 54 -6 38 8 20 C16 8 50 4 96 5"/></svg></b><span data-i18n="e1.n1">registros en migración</span></div>
@@ -411,11 +436,13 @@
       <span class="sd-tag">sd Infosys : InStep Intern</span>
       <span class="sd-meta" data-i18n="e2.d">02/2025 – 08/2025 · Bangalore, India · IA y análisis de datos</span>
       <div class="sd-body">
-        <div aria-hidden="true"><span class="ll"></span><span class="ll"></span><span class="ll"></span></div>
         <div class="heads"><span>Mario</span><span data-i18n="e2.a">App con LLMs</span><span data-i18n="e2.b">Mantenimiento predictivo</span></div>
+        <div class="seq">
+        <div aria-hidden="true"><span class="ll"></span><span class="ll"></span><span class="ll"></span></div>
         <div class="msg" style="--a:0;--b:1;--d:.1s"><p data-i18n="e2.1">Backend con <b>Python, FastAPI y LangChain</b>, y frontend con <b>React</b></p><i class="arrow"></i></div>
         <div class="msg" style="--a:0;--b:1;--d:.3s"><p data-i18n="e2.2">Precisión de las respuestas con <b>RAG</b></p><i class="arrow"></i></div>
         <div class="msg" style="--a:0;--b:2;--d:.5s"><p data-i18n="e2.3">Aplicación de IA con <b>gemelos digitales</b> y algoritmos de <b>Machine Learning</b></p><i class="arrow"></i></div>
+        </div>
       </div>
     </div>
   </div>
@@ -623,7 +650,7 @@ function setLang(l) {
   localStorage.setItem("lang", l);
   renderProjects();
   syncThemeLabel();
-  drawWires();
+  layoutBoard(true);
   if (document.readyState === "complete") { setupMorph(); onScroll(); }
 }
 document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => setLang(b.dataset.lang));
@@ -644,7 +671,7 @@ const LINKS = [
   { from: "c-me", to: "c-inf", key: "inf", marker: "open" },
   { from: "c-me", to: "c-uv", key: "uv", marker: "open" }
 ];
-const isBoardMode = () => matchMedia("(min-width: 681px)").matches;
+const isPhone = () => matchMedia("(max-width: 680px)").matches;
 
 function place(box) {
   const maxX = Math.max(0, board.clientWidth - box.offsetWidth);
@@ -655,7 +682,22 @@ function place(box) {
   box.style.top = y + "px";
 }
 
+/* phone: Mario on top, the rest staggered below him so the wires have room */
+function stackBoard() {
+  let y = 0;
+  boxes.forEach((box, i) => {
+    box.style.left = (i ? board.clientWidth - box.offsetWidth : 0) + "px";
+    box.style.top = y + "px";
+    y += box.offsetHeight + 26;
+  });
+  board.style.height = y - 26 + "px";
+}
+
 function route(a, b) {
+  if (isPhone() && b.offsetLeft > a.offsetLeft + 90 && b.offsetTop + b.offsetHeight / 2 > a.offsetTop + a.offsetHeight) {
+    const x = a.offsetLeft + 20, y1 = a.offsetTop + a.offsetHeight, y = b.offsetTop + b.offsetHeight / 2, x2 = b.offsetLeft;
+    return { d: `M${x} ${y1} L${x} ${y} L${x2} ${y}`, lx: (x + x2) / 2, ly: y };
+  }
   const ac = { x: a.offsetLeft + a.offsetWidth / 2, y: a.offsetTop + a.offsetHeight / 2 };
   const bc = { x: b.offsetLeft + b.offsetWidth / 2, y: b.offsetTop + b.offsetHeight / 2 };
   const dx = bc.x - ac.x, dy = bc.y - ac.y;
@@ -669,7 +711,6 @@ function route(a, b) {
 
 function drawWires() {
   wires.querySelectorAll(".wire").forEach(n => n.remove());
-  if (!isBoardMode()) return;
   const NS = "http://www.w3.org/2000/svg";
   for (const link of LINKS) {
     const r = route(document.getElementById(link.from), document.getElementById(link.to));
@@ -693,14 +734,15 @@ function moveBox(box, x, y) {
   y = Math.min(maxY, Math.max(0, y));
   box.style.left = x + "px";
   box.style.top = y + "px";
-  box.dataset.x = x / board.clientWidth * 100;
-  box.dataset.y = y / board.clientHeight * 100;
+  if (!isPhone()) {
+    box.dataset.x = x / board.clientWidth * 100;
+    box.dataset.y = y / board.clientHeight * 100;
+  }
   drawWires();
 }
 
 boxes.forEach(box => {
   box.addEventListener("pointerdown", e => {
-    if (!isBoardMode()) return;
     box.setPointerCapture(e.pointerId);
     box.classList.add("drag");
     const ox = e.clientX - box.offsetLeft, oy = e.clientY - box.offsetTop;
@@ -717,19 +759,26 @@ boxes.forEach(box => {
   });
   box.addEventListener("keydown", e => {
     const step = { ArrowLeft: [-20, 0], ArrowRight: [20, 0], ArrowUp: [0, -20], ArrowDown: [0, 20] }[e.key];
-    if (!step || !isBoardMode()) return;
+    if (!step) return;
     e.preventDefault();
     moveBox(box, box.offsetLeft + step[0], box.offsetTop + step[1]);
   });
 });
 
-function layoutBoard() {
-  if (isBoardMode()) boxes.forEach(place);
-  else boxes.forEach(b => { b.style.left = ""; b.style.top = ""; });
+/* a phone's address bar fires resize on scroll: only re-stack when the width really changes */
+let laidOutWidth = 0;
+function layoutBoard(force) {
+  if (isPhone()) {
+    if (force === true || board.clientWidth !== laidOutWidth) stackBoard();
+  } else {
+    board.style.height = "";
+    boxes.forEach(place);
+  }
+  laidOutWidth = board.clientWidth;
   drawWires();
 }
-addEventListener("resize", layoutBoard);
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutBoard);
+addEventListener("resize", () => layoutBoard());
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layoutBoard(true));
 
 /* ================= scroll: ruler, pencil thread, drawing compiles to code ================= */
 const root = document.documentElement;
