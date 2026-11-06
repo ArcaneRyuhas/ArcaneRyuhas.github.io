@@ -221,6 +221,19 @@
   .stamp { margin-left: auto; align-self: center; transform: rotate(-7deg); border: 3px double var(--pencil); color: var(--pencil); padding: .3rem .8rem; font-family: var(--mono); font-weight: 600; font-size: .92rem; line-height: 1.2; text-align: center; text-transform: uppercase; letter-spacing: .05em; }
   .stamp small { display: block; font-size: .68rem; letter-spacing: .12em; }
 
+  /* ---------- no scroll animation: the page itself ends as a console ---------- */
+  #contacto.flow { padding-bottom: 0; }
+  .flow .stage { padding-bottom: 0; }
+  .flow .layers { gap: 1.5rem; }
+  .flow .layer.code { width: 100vw; margin-left: calc(50% - 50vw); }
+  .flow .layer.code::before { content: ""; display: block; height: 5rem; background: linear-gradient(to bottom, transparent, var(--con-bg)); }
+  .flow .win { border: 0; padding: 0 max(1.5rem, calc(50vw - 590px)) calc(3rem + env(safe-area-inset-bottom, 0px)); }
+  .flow .win-bar { padding: .5rem 0; }
+  .flow .win-bar i { display: none; }
+  .flow .win-bar span { margin-left: 0; }
+  .flow .code-lines { padding: 1rem 0; }
+  .flow .term { padding: .8rem 0 0; }
+
   /* ---------- reveal ---------- */
   .js .rv { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
   .js .rv.in { opacity: 1; transform: none; }
@@ -254,8 +267,8 @@
     .heads span::before, .ll::before { width: 1.35rem; border: 1.5px solid var(--ink); background: var(--panel); font-family: var(--mono); font-size: .72rem; font-weight: 600; line-height: 1.35rem; text-align: center; color: var(--ink); }
     .heads span::before { content: counter(ll, upper-alpha); flex: none; }
     .seq { position: relative; padding-top: 2.2rem; }
-    .ll { top: 1.45rem; }
-    .ll::before { position: absolute; top: -1.45rem; left: 0; transform: translateX(-50%); }
+    .ll { top: 1.45rem; width: 2px; margin-left: -1px; border-left: 0; background: repeating-linear-gradient(to bottom, var(--ink) 0 6px, transparent 6px 11px); }
+    .ll::before { position: absolute; top: -1.45rem; left: 1px; transform: translateX(-50%); }
     .ll:nth-child(1) { left: 1.6rem; } .ll:nth-child(2) { left: 3.35rem; } .ll:nth-child(3) { left: 5.1rem; }
     .ll:nth-child(1)::before { content: "A"; } .ll:nth-child(2)::before { content: "B"; } .ll:nth-child(3)::before { content: "C"; }
     .msg { display: grid; grid-template-columns: 5.9rem 1fr; align-items: center; margin-bottom: 1rem; }
@@ -265,7 +278,20 @@
     .sd-meta { display: block; margin: .5rem .8rem 0; }
     .pkg, .pkg.wide, .obj, .obj:nth-child(-n+2) { grid-column: span 6; }
     .tblock { grid-template-columns: 1fr 1fr; }
-    .code-lines .ln { padding-left: 1rem; }
+    /* revision table: one stacked row per revision, nothing to scroll sideways */
+    .scroll-x { overflow: visible; }
+    .revs, .revs tbody { display: block; min-width: 0; }
+    .revs thead { display: none; }
+    .revs tr { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .45rem .7rem; padding: .85rem .9rem; }
+    .revs tr + tr { border-top: 1px solid var(--ink); }
+    .revs tr.newest { background: var(--marker); color: var(--marker-ink); }
+    .revs td, .revs td:first-child, .revs td:last-child { display: block; border: 0; padding: 0; background: none; }
+    .revs td:nth-child(1) { width: 1.6rem; border: 1.5px solid currentColor; font-weight: 600; line-height: 1.5rem; text-align: center; }
+    .revs td:nth-child(2) { grid-column: 1 / -1; grid-row: 2; line-height: 1.35; }
+    .revs td:nth-child(3) { grid-column: 2; grid-row: 1; font-family: var(--mono); font-size: .8rem; }
+    .revs td:nth-child(4) { grid-column: 3; grid-row: 1; font-size: .8rem; }
+    .win { font-size: min(.8rem, 3.35vw); }
+    .code-lines .ln { padding-left: 0; }
     .code-lines .ln::before { display: none; }
     .stamp { margin-left: 0; }
   }
@@ -745,10 +771,13 @@ boxes.forEach(box => {
   box.addEventListener("pointerdown", e => {
     box.setPointerCapture(e.pointerId);
     box.classList.add("drag");
-    const ox = e.clientX - box.offsetLeft, oy = e.clientY - box.offsetTop;
+    const startX = box.offsetLeft, startY = box.offsetTop;
+    const ox = e.clientX - startX, oy = e.clientY - startY;
     const move = ev => moveBox(box, ev.clientX - ox, ev.clientY - oy);
-    const up = () => {
+    const up = ev => {
       box.classList.remove("drag");
+      /* pointercancel: the browser took the gesture to scroll, so undo any nudge */
+      if (ev.type === "pointercancel") moveBox(box, startX, startY);
       box.removeEventListener("pointermove", move);
       box.removeEventListener("pointerup", up);
       box.removeEventListener("pointercancel", up);
@@ -793,13 +822,15 @@ const thread = document.getElementById("thread");
 const threadFirst = document.getElementById("perfil");
 const clamp = v => Math.min(1, Math.max(0, v));
 const smooth = (a, b, v) => { const x = clamp((v - a) / (b - a)); return x * x * (3 - 2 * x); };
-let morphing = false;
+let morphing = false, reducedMotion = false;
 
 function setupMorph() {
-  const allowed = !matchMedia("(prefers-reduced-motion: reduce)").matches && innerHeight >= 640 && innerWidth > 680;
+  reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const allowed = !reducedMotion && innerHeight >= 640 && innerWidth > 680;
   morphing = allowed;
   root.style.setProperty("--bar-h", bar.offsetHeight + "px");
   section.classList.toggle("morphing", allowed);
+  section.classList.toggle("flow", !allowed);
   stage.classList.toggle("morph", allowed);
   if (!allowed) {
     [morphBg, layerDesign, layerCode].forEach(el => { el.style.opacity = ""; el.style.transform = ""; });
@@ -823,7 +854,17 @@ function onScroll() {
   root.style.setProperty("--scroll", max > 0 ? clamp(scrollY / max) : 0);
   const top = thread.offsetTop, h = thread.offsetHeight;
   if (h) thread.style.setProperty("--thread", clamp((scrollY + innerHeight * .55 - top) / h));
-  if (!morphing) return;
+  if (!morphing) {
+    /* same story without pinning: the code writes itself as the console scrolls in */
+    const win = layerCode.querySelector(".win").getBoundingClientRect();
+    bar.classList.toggle("code", win.top < bar.offsetHeight);
+    if (reducedMotion) return;
+    const atEnd = scrollY + innerHeight >= root.scrollHeight - 4;
+    const p = atEnd ? 1 : clamp((innerHeight * .85 - win.top) / Math.max(1, win.height - innerHeight * .15 - 8));
+    const n = codeLines.length;
+    codeLines.forEach((l, i) => l.style.setProperty("--t", clamp(p * n - i)));
+    return;
+  }
   const travel = section.offsetHeight - stage.offsetHeight;
   const p = clamp((bar.offsetHeight - section.getBoundingClientRect().top) / travel);
   morphBg.style.opacity = smooth(.1, .55, p);
